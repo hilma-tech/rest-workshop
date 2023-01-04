@@ -47,9 +47,14 @@ app.get('/api/customer/:id', (req, res) => {
 	//First Mission: return to client customer from FakeDB - specified by param
 })
 
-//! Second Mission - (PUT) create a route that handles buying ice cream flavor by id from req.query, recive flavor and amount from query
+//! Second Mission - (PUT) create a route that handles buying ice cream flavor by name from req.params, 
+//!recive flavor from params and amount from body
 
-//! Third Mission - (Post) create a route that handle adding new flavor to the fakeDB. receive flavors through req.body
+//! Third Mission - (Post) create a route that handle adding new flavor to the fakeDB. 
+//!receive flavors through req.body
+
+//!Fourth Mission (Get) in the existing route "/api/flavor" add a query of amount. 
+//!If amount is given, return only the flavors that has at least that amount
 
 //! Extra Mission - (Delete) create a route that handle deleting flavor from the fakeDB.flavors through req.params
 

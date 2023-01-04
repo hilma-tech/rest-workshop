@@ -6,13 +6,14 @@ function App() {
   // states that need to be updated when fetching data from server
   const [allFlavors, setAllFlavors] = useState([]);//[ { name: "", amount: 0 } ]
   const [customer, setCustomer] = useState();//{{name:'',favoriteFlavor:''}}
-  
+
 
   // state for inputs
   const [newFlavor, setNewFlavor] = useState("");
   const [newStock, setNewStock] = useState(1);
   const [selectedFlavor, setSelectedFlavor] = useState();//string
   const [amountFlavor, setAmountFlavor] = useState(1);
+  const [wantedAmount, setWantedAmount] = useState() //number | undifined
 
   // handle functions for inputs
   const handleFlavorChange = (e) => {
@@ -21,6 +22,10 @@ function App() {
   const handleAmountChange = (e) => {
     setAmountFlavor(e.target.value);
   }
+  const handleWantedAmountChange = (e) => {
+    setWantedAmount(e.target.value);
+  }
+
   const handleNewFlavorChange = (e) => {
     setNewFlavor(e.target.value);
   }
@@ -30,9 +35,15 @@ function App() {
 
   // execute the fetch functions when the component is mounted
   useEffect(() => {
-    getFlavors();
+    getFilteredFlavors();
+
+  }, [wantedAmount])
+
+  useEffect(() => {
     getCustomer();
+    getFlavors();
   }, [])
+
 
   // example fetch functions
   const getFlavors = async () => {
@@ -40,6 +51,8 @@ function App() {
       const res = await fetch("http://localhost:8000/api/flavor") // fetching the data from the server
       const data = await res.json(); // converting the data to json from stringJSON (string)
       setAllFlavors(data); // setting the data to the state
+
+
     } catch (error) {
       alert(_SERVER_ERROR)
     }
@@ -52,7 +65,6 @@ function App() {
 
   const buyAmountOfFlavor = async () => {
     // second mission: using selectedFlavor and amountFlavor, "buy" the wanted amount from the selected flavor 
-    //!use query??? maybe here with filter or with chosen flavor amount
     // update the the selected flavor amount in allFlavors state 
   }
 
@@ -62,7 +74,19 @@ function App() {
 
   }
 
-  //fourth mission: create a delete flavor functionality
+  const getFilteredFlavors = async () => {
+    // fourth mission: 
+    // PART 1:
+    // using wantedAmount, get all the flavour that have the wanted amount is stock
+    // update allFlavors state 
+    // how to write a query: https://www.semrush.com/blog/url-parameters/
+
+    // PART 2:
+    // create a state called filteredFlavors, 
+    // and change the flavors map div from all flavors to filtered flavors
+  }
+
+  //fifth mission: create a delete flavor functionality
   //1. create in the client a component to select a flavor from stock
   //2. create a button that deletes a flavor
   //3. create a handleClick function that sends to server a fetch req to delete selected item
@@ -80,14 +104,21 @@ function App() {
         {allFlavors &&
           <div className="message">
             <h3 className='our-message'>Our stock right now:</h3>
-            
+            <div style={{ marginBottom: "1vw" }}>
+              wanted amount
+              <select className='search post-select' placeholder='amount' style={{ marginLeft: "1vw" }} value={wantedAmount} onChange={handleWantedAmountChange}>
+                {_ARRAY_OF_NUMBERS.map(number => {
+                  return <option value={number}>{number}</option>
+                })}
+              </select>
+            </div>
             <div className='flavours'>
               {
                 allFlavors.map(flavor => {
                   return <div className={`${flavor.name} flavor`}>{flavor.name} <br /> {flavor.amount}</div> // mapping the data to the screen
                 })
               }
-              
+
 
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-evenly', marginTop: '5vh', color: 'black' }}>
@@ -129,7 +160,7 @@ function App() {
         </div >
       </div>
     </div >
-  );            
+  );
 }
 
 export default App;
