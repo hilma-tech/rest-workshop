@@ -18,6 +18,8 @@ function App() {
   const [wantedAmount, setWantedAmount] = useState() //number | undifined
   const [filteredFlavors, setFilteredFlavors] = useState([]);//[ { name: "", amount: 0 } ]
 
+  const [deletedFlavor, setDeletedFlavor] = useState();//string
+
   // handle functions for inputs
   const handleFlavorChange = (e) => {
     setSelectedFlavor(e.target.value);
@@ -34,6 +36,10 @@ function App() {
   }
   const handleNewStockChange = (e) => {
     setNewStock(e.target.value);
+  }
+
+  const handleFlavorDeleteChange = (e) => {
+    setDeletedFlavor(e.target.value)
   }
 
   // execute the fetch functions when the component is mounted
@@ -129,7 +135,6 @@ function App() {
 
     const res = await fetch(`http://localhost:8000/api/flavor?${wantedAmount ? `amount=${wantedAmount}` : ""}`) // fetching the data from the server
     const data = await res.json(); // converting the data to json from stringJSON (string)
-    console.log('data : ', data );
     setFilteredFlavors(data); // setting the data to the state
 
 
@@ -142,6 +147,20 @@ function App() {
   //3. create a handleClick function that sends to server a fetch req to delete selected item
   //4. tip: use any one of the methods that was used during this exercise (param, query or body)
   const deleteFlavor = async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/api/flavor/${deletedFlavor}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }) // fetching the data from the server
+      const data = await res.json(); // converting the data to json from stringJSON (string)
+      setAllFlavors(data)// setting the data to the state
+
+    } catch (error) {
+
+    }
   }
 
 
@@ -206,6 +225,21 @@ function App() {
               })}
             </select>}
             <button className='post-button' onClick={() => { buyAmountOfFlavor(); getFlavors() }}>update</button>
+
+          </div>
+        </div >
+
+        <div className="search-flavor">
+          <h4>Delete ice cream:</h4>
+          <div className='search-div'>
+
+            {allFlavors && <select className='search post-select' placeholder='flavor name' value={deletedFlavor} onChange={handleFlavorDeleteChange}>
+              {allFlavors.map(flavor => {
+                return <option value={flavor.name}>{flavor.name}</option>
+              })}
+            </select>}
+            <button className='post-button' onClick={() => { deleteFlavor(); getFlavors() }}>delete</button>
+
           </div>
         </div >
       </div>

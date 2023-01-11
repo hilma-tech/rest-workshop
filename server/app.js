@@ -44,10 +44,6 @@ app.get('/api/flavor', (req, res) => {
 	const { query } = req
 
 	const toGive = query.amount ? fakeDB.flavors.filter(flavor => flavor.amount >= Number(query.amount)) : fakeDB.flavors
-	console.log('query: ', query);
-	console.log('Number(query.amount): ',query.amount);
-	console.log('toGive: ', toGive);
-	undefined
 	res.json(toGive) //use res.json to return res as json
 });
 
@@ -55,7 +51,6 @@ app.get('/api/flavor', (req, res) => {
 app.get('/api/customer/:id', (req, res) => {
 	//First Mission: return to client customer from FakeDB - specified by param
 	const user = fakeDB.customers.find(customer => customer.id === Number(req.params.id))
-	console.log('user: ', user);
 	res.json(user)
 })
 
@@ -86,6 +81,13 @@ app.post('/api/flavor', (req, res, next) => {
 //!If amount is given, return only the flavors that has at least that amount
 
 //! Extra Mission - (Delete) create a route that handle deleting flavor from the fakeDB.flavors through req.params
+app.delete('/api/flavor/:name', (req, res, next) => {
+	const { params } = req
+
+	const toGive = fakeDB.flavors.filter(flavor => flavor.name !== params.name)
+	fakeDB.flavors = toGive
+	res.json(toGive) //use res.json to return res as json
+})
 
 app.listen(port, () => {
 	console.log(`Example app listening on port ${port}!`)
