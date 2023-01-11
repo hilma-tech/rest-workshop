@@ -11,9 +11,12 @@ function App() {
   // state for inputs
   const [newFlavor, setNewFlavor] = useState("");
   const [newStock, setNewStock] = useState(1);
+
   const [selectedFlavor, setSelectedFlavor] = useState();//string
   const [amountFlavor, setAmountFlavor] = useState(1);
+
   const [wantedAmount, setWantedAmount] = useState() //number | undifined
+  const [filteredFlavors, setFilteredFlavors] = useState([]);//[ { name: "", amount: 0 } ]
 
   // handle functions for inputs
   const handleFlavorChange = (e) => {
@@ -40,18 +43,18 @@ function App() {
   }, [wantedAmount])
 
   useEffect(() => {
+
     getCustomer();
     getFlavors();
   }, [])
 
-
   // example fetch functions
   const getFlavors = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/flavor") // fetching the data from the server
+      const res = await fetch(`http://localhost:8000/api/flavor?${wantedAmount ? `amount=${wantedAmount}` : ""}`) // fetching the data from the server
       const data = await res.json(); // converting the data to json from stringJSON (string)
       setAllFlavors(data); // setting the data to the state
-
+      setFilteredFlavors(data)
 
     } catch (error) {
       alert(_SERVER_ERROR)
@@ -61,16 +64,59 @@ function App() {
   const getCustomer = async () => {
     // first mission: get the customer with id 2 from the server by including the id in the url as a parameter
     //setCostumer with the given data 
+
+    try {
+      const res = await fetch("http://localhost:8000/api/customer/2") // fetching the data from the server
+      const data = await res.json(); // converting the data to json from stringJSON (string)
+      setCustomer(data); //setting the data to the state
+
+    } catch (error) {
+      console.error('error: ', error);
+
+
+    }
   }
 
   const buyAmountOfFlavor = async () => {
     // second mission: using selectedFlavor and amountFlavor, "buy" the wanted amount from the selected flavor 
     // update the the selected flavor amount in allFlavors state 
+    try {
+      const res = await fetch(`http://localhost:8000/api/flavor/${selectedFlavor}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ amount: amountFlavor }),
+        }) // fetching the data from the server
+      const data = await res.json(); // converting the data to json from stringJSON (string)
+      setAllFlavors(data)// setting the data to the state
+
+    } catch (error) {
+      console.log('error: ', error);
+
+    }
   }
 
   const postFlavor = async () => {
     // third mission:using newFlavor and newStock add a new flavor - passing amount and flavor name using the body of the request
     // add the ne flavor and its amount in allFlavors state 
+    try {
+      const res = await fetch(`http://localhost:8000/api/flavor/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newFlavor, amount: newStock }),
+        }) // fetching the data from the server
+      const data = await res.json(); // converting the data to json from stringJSON (string)
+      setAllFlavors(data)// setting the data to the state
+
+    } catch (error) {
+      console.log('error: ', error);
+
+    }
 
   }
 
@@ -81,9 +127,13 @@ function App() {
     // update allFlavors state 
     // how to write a query: https://www.semrush.com/blog/url-parameters/
 
-    // PART 2:
-    // create a state called filteredFlavors, 
-    // and change the flavors map div from all flavors to filtered flavors
+    const res = await fetch(`http://localhost:8000/api/flavor?${wantedAmount ? `amount=${wantedAmount}` : ""}`) // fetching the data from the server
+    const data = await res.json(); // converting the data to json from stringJSON (string)
+    console.log('data : ', data );
+    setFilteredFlavors(data); // setting the data to the state
+
+
+
   }
 
   //fifth mission: create a delete flavor functionality
@@ -114,7 +164,7 @@ function App() {
             </div>
             <div className='flavours'>
               {
-                allFlavors.map(flavor => {
+                filteredFlavors.map(flavor => {
                   return <div className={`${flavor.name} flavor`}>{flavor.name} <br /> {flavor.amount}</div> // mapping the data to the screen
                 })
               }

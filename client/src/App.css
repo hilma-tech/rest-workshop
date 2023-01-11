@@ -45,7 +45,7 @@
   /* border: double 5px black; */
   background-color: #9be2cb;
   border-radius: 3vh;
-  height: 40vh;
+
   width: 34vw;
 
 }
@@ -137,7 +137,11 @@
   margin-bottom: -5%;
 }
 .flavor{
-  margin:0.3vh
+  margin:0.3vh;
+  width: 8vw;
+  border-radius: 2vh;
+  line-height: 5vh;
+  height: 11vh;
 }
 .vanilla {
   background-color: beige;
